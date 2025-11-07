@@ -1,17 +1,3 @@
-// Request a role
-router.post('/request', asyncHandler(async (req, res) => {
-  const { role, reason } = req.body;
-  if (!role) {
-    return res.status(400).json({ error: 'Role is required' });
-  }
-  // Save request to a new table or log (for demo, just log)
-  await pool.execute(
-    'INSERT INTO role_requests (user_id, role, reason, status, requested_at) VALUES (?, ?, ?, ?, NOW())',
-    [req.user.id, role, reason || '', 'pending']
-  );
-  logger.logAudit(req.user.id, 'ROLE_REQUESTED', 'role_requests', null, { role, reason });
-  res.status(201).json({ message: 'Role request submitted!' });
-}));
 const express = require('express');
 const { body, validationResult, query } = require('express-validator');
 const { pool } = require('../config/database');
@@ -230,6 +216,21 @@ router.post('/', requireAdmin, validateRole, asyncHandler(async (req, res) => {
     message: 'Role created successfully',
     role: roles[0]
   });
+}));
+
+// Request a role
+router.post('/request', asyncHandler(async (req, res) => {
+  const { role, reason } = req.body;
+  if (!role) {
+    return res.status(400).json({ error: 'Role is required' });
+  }
+  // Save request to a new table or log (for demo, just log)
+  await pool.execute(
+    'INSERT INTO role_requests (user_id, role, reason, status, requested_at) VALUES (?, ?, ?, ?, NOW())',
+    [req.user.id, role, reason || '', 'pending']
+  );
+  logger.logAudit(req.user.id, 'ROLE_REQUESTED', 'role_requests', null, { role, reason });
+  res.status(201).json({ message: 'Role request submitted!' });
 }));
 
 // Update role

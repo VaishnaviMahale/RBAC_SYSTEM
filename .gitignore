@@ -1,0 +1,3 @@
+node_modules/
+server/logs/combined.log
+client/package-lock.json

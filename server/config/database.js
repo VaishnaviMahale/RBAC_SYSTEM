@@ -31,8 +31,10 @@ const testConnection = async () => {
 
 // Initialize database tables
 const initializeDatabase = async () => {
-  // Role Requests table
-  await connection.execute(`
+  try {
+    const connection = await pool.getConnection();
+    // Role Requests table
+    await connection.execute(`
       CREATE TABLE IF NOT EXISTS role_requests (
         id INT PRIMARY KEY AUTO_INCREMENT,
         user_id INT NOT NULL,
@@ -45,9 +47,6 @@ const initializeDatabase = async () => {
         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
       )
     `);
-  try {
-    const connection = await pool.getConnection();
-
     // Users table
     await connection.execute(`
       CREATE TABLE IF NOT EXISTS users (
